@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
+import javax.imageio.ImageIO;
 
 public class CanvasPanel extends JComponent {
     private final List<ShapeBase> shapes = new ArrayList<>();
@@ -109,18 +113,34 @@ public class CanvasPanel extends JComponent {
                         current = new FreehandShape(activeColor, activeStroke);
                         ((FreehandShape) current).addPoint(w);
                         shapes.add(current);
+                        {
+                            final ShapeBase created = current;
+                            undoStack.push(() -> shapes.remove(created));
+                        }
                         break;
                     case LINE:
                         current = new LineShape(activeColor, activeStroke, w, w);
                         shapes.add(current);
+                        {
+                            final ShapeBase created = current;
+                            undoStack.push(() -> shapes.remove(created));
+                        }
                         break;
                     case RECT:
                         current = new RectShape(activeColor, activeStroke, w, w);
                         shapes.add(current);
+                        {
+                            final ShapeBase created = current;
+                            undoStack.push(() -> shapes.remove(created));
+                        }
                         break;
                     case CIRCLE:
                         current = new EllipseShape(activeColor, activeStroke, w, w);
                         shapes.add(current);
+                        {
+                            final ShapeBase created = current;
+                            undoStack.push(() -> shapes.remove(created));
+                        }
                         break;
                     case ERASER:
                         eraseAt(w);
@@ -239,7 +259,20 @@ public class CanvasPanel extends JComponent {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (selected != null) {
-                    shapes.remove(selected);
+                    final ShapeBase removed = selected;
+                    final int index = shapes.indexOf(removed);
+                    if (index >= 0) {
+                        undoStack.push(() -> {
+                            if (!shapes.contains(removed)) {
+                                if (index >= 0 && index <= shapes.size()) {
+                                    shapes.add(index, removed);
+                                } else {
+                                    shapes.add(removed);
+                                }
+                            }
+                        });
+                        shapes.remove(index);
+                    }
                     selected = null;
                     repaint();
                 }
@@ -285,12 +318,35 @@ public class CanvasPanel extends JComponent {
     private void eraseAt(Point2D.Double worldPt) {
         List<ShapeBase> toRemove = new ArrayList<>();
         double radius = 20 / Math.max(scale, 0.1);
-        for (ShapeBase s : shapes) {
-            if (s.isNear(worldPt, radius))
+        List<Integer> originalIndices = new ArrayList<>();
+        for (int i = 0; i < shapes.size(); i++) {
+            ShapeBase s = shapes.get(i);
+            if (s.isNear(worldPt, radius)) {
                 toRemove.add(s);
+                originalIndices.add(i);
+            }
         }
         if (!toRemove.isEmpty()) {
+            // capture snapshot for undo
+            final List<ShapeBase> removedShapes = new ArrayList<>(toRemove);
+            final List<Integer> indices = new ArrayList<>(originalIndices);
+            undoStack.push(() -> {
+                // restore in ascending index order
+                for (int i = 0; i < indices.size(); i++) {
+                    int idx = indices.get(i);
+                    ShapeBase s = removedShapes.get(i);
+                    if (idx >= 0 && idx <= shapes.size()) {
+                        shapes.add(idx, s);
+                    } else {
+                        shapes.add(s);
+                    }
+                }
+            });
+
             shapes.removeAll(toRemove);
+            if (toRemove.contains(selected)) {
+                selected = null;
+            }
             repaint();
         }
     }
@@ -344,6 +400,7 @@ public class CanvasPanel extends JComponent {
         if (txt != null && !txt.trim().isEmpty()) {
             TextShape t = new TextShape(activeColor, activeStroke, worldPt, txt);
             shapes.add(t);
+            undoStack.push(() -> shapes.remove(t));
             repaint();
         }
     }
@@ -374,5 +431,220 @@ public class CanvasPanel extends JComponent {
 
     public void setStroke(float s) {
         this.activeStroke = s;
+    }
+
+    // --------- Persistence (save/load) ---------
+
+    private static String colorToHex(Color c) {
+        return String.format("#%06X", (0xFFFFFF & c.getRGB()));
+    }
+
+    private static Color parseColor(String hex) {
+        String h = hex.trim();
+        if (h.startsWith("#")) {
+            h = h.substring(1);
+        }
+        int rgb = (int) Long.parseLong(h, 16);
+        return new Color(rgb);
+    }
+
+    public void saveToFile(File file) throws IOException {
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(file)))) {
+            for (ShapeBase s : shapes) {
+                String line = serializeShape(s);
+                if (line != null && !line.isEmpty()) {
+                    out.println(line);
+                }
+            }
+        }
+    }
+
+    public void loadFromFile(File file) throws IOException {
+        List<ShapeBase> loaded = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                ShapeBase s = deserializeShape(line);
+                if (s != null) {
+                    loaded.add(s);
+                }
+            }
+        }
+
+        shapes.clear();
+        shapes.addAll(loaded);
+        selected = null;
+        undoStack.clear();
+        repaint();
+    }
+
+    private String serializeShape(ShapeBase s) {
+        String colorHex = colorToHex(s.color);
+        float strokeWidth = s.stroke;
+
+        if (s instanceof FreehandShape) {
+            FreehandShape f = (FreehandShape) s;
+            java.util.List<Point2D.Double> pts = f.getPoints();
+            int n = pts.size();
+            if (n == 0) {
+                return null;
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append("FREEHAND ").append(colorHex).append(" ").append(strokeWidth).append(" ").append(n);
+            for (Point2D.Double pt : pts) {
+                sb.append(" ").append(pt.x).append(" ").append(pt.y);
+            }
+            return sb.toString();
+        } else if (s instanceof LineShape) {
+            LineShape l = (LineShape) s;
+            Rectangle2D b = l.getBounds();
+            double x1 = b.getX();
+            double y1 = b.getY();
+            double x2 = b.getX() + b.getWidth();
+            double y2 = b.getY() + b.getHeight();
+            return String.format("LINE %s %f %f %f %f", colorHex, strokeWidth, x1, y1, x2, y2);
+        } else if (s instanceof RectShape) {
+            RectShape r = (RectShape) s;
+            Rectangle2D b = r.getBounds();
+            double x1 = b.getX();
+            double y1 = b.getY();
+            double x2 = b.getX() + b.getWidth();
+            double y2 = b.getY() + b.getHeight();
+            return String.format("RECT %s %f %f %f %f", colorHex, strokeWidth, x1, y1, x2, y2);
+        } else if (s instanceof EllipseShape) {
+            EllipseShape e = (EllipseShape) s;
+            Rectangle2D b = e.getBounds();
+            double x1 = b.getX();
+            double y1 = b.getY();
+            double x2 = b.getX() + b.getWidth();
+            double y2 = b.getY() + b.getHeight();
+            return String.format("ELLIPSE %s %f %f %f %f", colorHex, strokeWidth, x1, y1, x2, y2);
+        } else if (s instanceof TextShape) {
+            TextShape t = (TextShape) s;
+            Rectangle2D b = t.getBounds();
+            double x = b.getX();
+            double y = b.getY() + b.getHeight(); // approximate baseline
+            return String.format("TEXT %s %f %f %f %s", colorHex, strokeWidth, x, y, t.text.replace("\n", " "));
+        }
+
+        return null;
+    }
+
+    private ShapeBase deserializeShape(String line) {
+        StringTokenizer st = new StringTokenizer(line, " ");
+        if (!st.hasMoreTokens()) {
+            return null;
+        }
+        String type = st.nextToken();
+        if (!st.hasMoreTokens()) {
+            return null;
+        }
+        String colorToken = st.nextToken();
+        if (!st.hasMoreTokens()) {
+            return null;
+        }
+
+        float strokeWidth;
+        try {
+            strokeWidth = Float.parseFloat(st.nextToken());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+
+        Color c;
+        try {
+            c = parseColor(colorToken);
+        } catch (Exception ex) {
+            return null;
+        }
+
+        try {
+            if ("FREEHAND".equals(type)) {
+                int n = Integer.parseInt(st.nextToken());
+                List<Point2D.Double> pts = new ArrayList<>();
+                for (int i = 0; i < n; i++) {
+                    double x = Double.parseDouble(st.nextToken());
+                    double y = Double.parseDouble(st.nextToken());
+                    pts.add(new Point2D.Double(x, y));
+                }
+                FreehandShape f = new FreehandShape(c, strokeWidth);
+                for (Point2D.Double p : pts) {
+                    f.addPoint(p);
+                }
+                return f;
+            } else if ("LINE".equals(type)) {
+                double x1 = Double.parseDouble(st.nextToken());
+                double y1 = Double.parseDouble(st.nextToken());
+                double x2 = Double.parseDouble(st.nextToken());
+                double y2 = Double.parseDouble(st.nextToken());
+                Point2D.Double a = new Point2D.Double(x1, y1);
+                Point2D.Double b = new Point2D.Double(x2, y2);
+                return new LineShape(c, strokeWidth, a, b);
+            } else if ("RECT".equals(type)) {
+                double x1 = Double.parseDouble(st.nextToken());
+                double y1 = Double.parseDouble(st.nextToken());
+                double x2 = Double.parseDouble(st.nextToken());
+                double y2 = Double.parseDouble(st.nextToken());
+                Point2D.Double a = new Point2D.Double(x1, y1);
+                Point2D.Double b = new Point2D.Double(x2, y2);
+                return new RectShape(c, strokeWidth, a, b);
+            } else if ("ELLIPSE".equals(type)) {
+                double x1 = Double.parseDouble(st.nextToken());
+                double y1 = Double.parseDouble(st.nextToken());
+                double x2 = Double.parseDouble(st.nextToken());
+                double y2 = Double.parseDouble(st.nextToken());
+                Point2D.Double a = new Point2D.Double(x1, y1);
+                Point2D.Double b = new Point2D.Double(x2, y2);
+                return new EllipseShape(c, strokeWidth, a, b);
+            } else if ("TEXT".equals(type)) {
+                double x = Double.parseDouble(st.nextToken());
+                double y = Double.parseDouble(st.nextToken());
+                StringBuilder sb = new StringBuilder();
+                while (st.hasMoreTokens()) {
+                    if (sb.length() > 0) {
+                        sb.append(' ');
+                    }
+                    sb.append(st.nextToken());
+                }
+                String txt = sb.toString();
+                Point2D.Double pos = new Point2D.Double(x, y);
+                return new TextShape(c, strokeWidth, pos, txt);
+            }
+        } catch (Exception ex) {
+            return null;
+        }
+
+        return null;
+    }
+
+    // --------- PNG export ---------
+
+    public void exportToPng(File file) throws IOException {
+        int w = Math.max(1, getWidth());
+        int h = Math.max(1, getHeight());
+
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+
+        // background
+        g2.setColor(getBackground());
+        g2.fillRect(0, 0, w, h);
+
+        // apply same world transform as paintComponent, but without selection rectangles
+        AffineTransform at = new AffineTransform();
+        at.translate(translateX, translateY);
+        at.scale(scale, scale);
+        g2.transform(at);
+
+        for (ShapeBase s : shapes) {
+            s.draw(g2);
+        }
+
+        g2.dispose();
+        ImageIO.write(img, "png", file);
     }
 }

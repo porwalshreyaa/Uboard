@@ -16,6 +16,10 @@ public class FreehandShape extends ShapeBase {
         points.add(p);
     }
 
+    public List<Point2D.Double> getPoints() {
+        return new ArrayList<>(points);
+    }
+
     @Override
     public void moveTo(double x, double y) {
         Rectangle2D bounds = getBounds();

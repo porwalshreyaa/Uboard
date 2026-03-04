@@ -4,6 +4,10 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class TextShape extends ShapeBase {
+    private static final Font TEXT_FONT = new Font("Segoe UI", Font.PLAIN, 16);
+    private static final FontMetrics TEXT_METRICS =
+            Toolkit.getDefaultToolkit().getFontMetrics(TEXT_FONT);
+
     Point2D.Double pos;
     String text;
 
@@ -22,24 +26,27 @@ public class TextShape extends ShapeBase {
     @Override
     public void draw(Graphics2D g2) {
         g2.setColor(color);
-        g2.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        // small jitter to look hand-drawn
-        double jitterX = (Math.random() - 0.5) * 0.8;
-        double jitterY = (Math.random() - 0.5) * 0.8;
-        g2.drawString(text, (float) (pos.x + jitterX), (float) (pos.y + jitterY));
+        g2.setFont(TEXT_FONT);
+        g2.drawString(text, (float) pos.x, (float) pos.y);
     }
 
     @Override
     public boolean contains(Point2D.Double p) {
-        FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(new Font("Segoe UI", Font.PLAIN, 16));
-        Rectangle2D r = new Rectangle2D.Double(pos.x, pos.y - fm.getAscent(), fm.stringWidth(text), fm.getHeight());
+        Rectangle2D r = new Rectangle2D.Double(
+                pos.x,
+                pos.y - TEXT_METRICS.getAscent(),
+                TEXT_METRICS.stringWidth(text),
+                TEXT_METRICS.getHeight());
         return r.contains(p);
     }
 
     @Override
     public Rectangle2D getBounds() {
-        FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(new Font("Segoe UI", Font.PLAIN, 16));
-        return new Rectangle2D.Double(pos.x, pos.y - fm.getAscent(), fm.stringWidth(text), fm.getHeight());
+        return new Rectangle2D.Double(
+                pos.x,
+                pos.y - TEXT_METRICS.getAscent(),
+                TEXT_METRICS.stringWidth(text),
+                TEXT_METRICS.getHeight());
     }
 
     @Override

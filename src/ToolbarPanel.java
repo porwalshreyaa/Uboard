@@ -413,11 +413,12 @@ public class ToolbarPanel extends JPanel {
 
         add(Box.createHorizontalStrut(12));
         JButton undo = new JButton("Undo");
-        undo.addActionListener(e -> canvas.repaint());
+        undo.addActionListener(e -> canvas.undo());
         JButton clear = new JButton("Clear");
         clear.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this, "Clear?", "Confirm",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                canvas.clear();
                 canvas.setTool(Tool.PEN);
             }
         });

@@ -13,7 +13,12 @@ public class RectShape extends ShapeBase {
     }
 
     @Override
-    public void moveTo(double dx, double dy) {
+    public void moveTo(double x, double y) {
+        Rectangle2D bounds = getBounds();
+
+        double dx = x - bounds.getX();
+        double dy = y - bounds.getY();
+
         a.x += dx;
         a.y += dy;
         b.x += dx;
