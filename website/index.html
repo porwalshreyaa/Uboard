@@ -1,142 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8"/>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <meta name="language" content="English"/>
-        <title>Uboard : Local-First Infinite Blackboard</title>
-        <meta name="description" content="Uboard is a local-first infinite blackboard for Linux. A lightweight Java Swing desktop app for sketching, thinking, and organizing ideas — fully offline and open source."/>
-        <meta name="keywords" content="Uboard, infinite blackboard, infinite canvas, offline whiteboard, Java Swing app, Linux drawing app, local first software"/>
-        <meta name="author" content="Shreya"/>
-        <meta name="robots" content="index, follow"/>
-        <link rel="canonical" href="https://uboardapp.netlify.app/"/>
-        <meta property="og:type" content="website"/>
-        <meta property="og:title" content="Uboard — Your Own Space"/>
-        <meta property="og:description" content="A local-first infinite blackboard for Linux. Sketch, plan, and think freely — no cloud, no accounts."/>
-        <meta property="og:url" content="https://uboardapp.netlify.app/"/>
-        <meta property="og:image" content="https://uboardapp.netlify.app/assets/screenshot.png"/>
-        <meta property="og:site_name" content="Uboard"/>
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:title" content="Uboard — Local-First Infinite Blackboard"/>
-        <meta name="twitter:description" content="A fast, private infinite blackboard for Linux. Built with Java Swing. Fully offline."/>
-        <meta name="twitter:image" content="https://uboardapp.netlify.app/assets/screenshot.png"/>
-        <meta name="theme-color" content="#020617"/>
-        <meta name="color-scheme" content="dark"/>
-        <link rel="icon" href="./assets/icons/icon.png"/>
-        <link rel="apple-touch-icon" href="./assets/icons/icon.png"/>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>:root
-        {
-            --chalk-pink: #fb7185;
-            --chalk-cyan: #22d3ee;
-            --chalk-yellow: #facc15;
-            /* --chalk-purple: #5e527e; */
-            --chalk-purple: #6b5a8e;
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="language" content="English" />
+    <title>Uboard : Local-First Infinite Blackboard</title>
+    <meta name="description"
+      content="Uboard is a local-first infinite blackboard for Linux. A lightweight Java Swing desktop app for sketching, thinking, and organizing ideas — fully offline and open source." />
+    <meta name="keywords"
+      content="Uboard, infinite blackboard, infinite canvas, offline whiteboard, Java Swing app, Linux drawing app, local first software" />
+    <meta name="author" content="Shreya" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://uboardapp.netlify.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Uboard — Your Own Space" />
+    <meta property="og:description"
+      content="A local-first infinite blackboard for Linux. Sketch, plan, and think freely — no cloud, no accounts." />
+    <meta property="og:url" content="https://uboardapp.netlify.app/" />
+    <meta property="og:image" content="https://uboardapp.netlify.app/assets/screenshot.png" />
+    <meta property="og:site_name" content="Uboard" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Uboard — Local-First Infinite Blackboard" />
+    <meta name="twitter:description"
+      content="A fast, private infinite blackboard for Linux. Built with Java Swing. Fully offline." />
+    <meta name="twitter:image" content="https://uboardapp.netlify.app/assets/screenshot.png" />
+    <meta name="theme-color" content="#020617" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="./assets/icons/icon.png" />
+    <link rel="apple-touch-icon" href="./assets/icons/icon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --chalk-pink: #fb7185;
+        --chalk-cyan: #22d3ee;
+        --chalk-yellow: #facc15;
+        /* --chalk-purple: #5e527e; */
+        --chalk-purple: #6b5a8e;
 
-            --chalk-coral: #fb8c7a;
-        }
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            background: radial-gradient(900px 600px at 12% 18%, rgba(251, 140, 122, 0.18), transparent), radial-gradient(700px 500px at 80% 75%, rgba(255, 255, 255, 0.04), transparent), radial-gradient(500px 400px at 90% 20%, rgba(34, 211, 238, 0.12), transparent), linear-gradient(180deg, #05060f 0%, #0b1026 100%);
-        }
-        img {
-            image-rendering: auto;
-        }
+        --chalk-coral: #fb8c7a;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: radial-gradient(900px 600px at 12% 18%, rgba(251, 140, 122, 0.18), transparent), radial-gradient(700px 500px at 80% 75%, rgba(255, 255, 255, 0.04), transparent), radial-gradient(500px 400px at 90% 20%, rgba(34, 211, 238, 0.12), transparent), linear-gradient(180deg, #05060f 0%, #0b1026 100%);
+      }
+      img {
+        image-rendering: auto;
+      }
     </style>
-</head>
-<body class="text-slate-200 antialiased">
+  </head>
+  <body class="text-slate-200 antialiased">
     <header class="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <img src="./assets/icons/icon.png" alt="Uboard icon" class="h-12 w-12 rounded-xl"/>
-            <div>
-                <div class="font-extrabold text-lg">Uboard</div>
-                <div class="text-sm text-slate-400">
-                    Local-first · Infinite blackboard
-                </div>
-            </div>
+      <div class="flex items-center gap-4">
+        <img src="./assets/icons/icon.png" alt="Uboard icon" class="h-12 w-12 rounded-xl" />
+        <div>
+          <div class="font-extrabold text-lg">Uboard</div>
+          <div class="text-sm text-slate-400">
+            Local-first · Infinite blackboard
+          </div>
         </div>
-        <nav class="hidden md:flex gap-6 text-sm text-slate-400">
-            <a href="#features" class="hover:text-white">Features</a>
-            <a href="#preview" class="hover:text-white">Preview</a>
-            <a href="#download" class="px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition">
-                Download
-            </a>
+      </div>
+      <nav class="hidden md:flex gap-6 text-sm text-slate-400">
+        <a href="#features" class="hover:text-white">Features</a>
+        <a href="#preview" class="hover:text-white">Preview</a>
+        <a href="#download" class="px-4 py-2 rounded-full border border-white/10 hover:border-white/30 transition">
+          Download
         </a>
-    </nav>
-</body></html></header><section class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center mt-12"><div class="space-y-7">
-<span class="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">
-    Desktop v1 · Linux only
-</span>
+        </a>
+      </nav>
+  </body>
 
-<h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
-    Your own space<br/>
-    <span class="bg-gradient-to-r from-[var(--chalk-pink)] to-[var(--chalk-coral)] bg-clip-text text-transparent">
-        to think freely
+</html>
+</header>
+<section class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center mt-12">
+  <div class="space-y-7">
+    <span
+      class="inline-block text-xs font-semibold px-3 py-1 rounded-full bg-white/5 text-slate-300 border border-white/10">
+      Desktop v1 · Linux only
     </span>
-</h1>
-<p class="text-slate-400 max-w-xl text-lg">
-    Uboard is a local-first infinite blackboard for sketching ideas,
-          exploring thoughts, and organizing visually
-    <br>
-    <span class="gap-2 text-slate-200">
+
+    <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">
+      Your own space<br />
+      <span class="bg-gradient-to-r from-[var(--chalk-pink)] to-[var(--chalk-coral)] bg-clip-text text-transparent">
+        to think freely
+      </span>
+    </h1>
+    <p class="text-slate-400 max-w-xl text-lg">
+      Uboard is a local-first infinite blackboard for sketching ideas,
+      exploring thoughts, and organizing visually
+      <br>
+      <span class="gap-2 text-slate-200">
         without accounts, sync,
-                or cloud dependencies.</span>
-</p>
-<div class="flex gap-2 text-xs text-slate-500"></div>
-<div id="download" class="scroll-mt-28"></div>
-<div class="flex flex-wrap gap-4 mt-4">
-    <a href="https://github.com/porwalshreyaa/Uboard/raw/refs/heads/main/releases/uboard_1.0_amd64.deb" download class="px-7 py-3 rounded-xl font-semibold bg-white/90 text-black hover:bg-white transition shadow-xl shadow-black/40">
-        Download for Linux (.deb)
-    </a>
-    <a href="https://github.com/porwalshreyaa/Uboard" target="_blank" rel="noopener noreferrer" class="px-7 py-3 rounded-xl border border-white-400/30 text-white-300 hover:bg-white-400/10 transition">
-        View on GitHub
-    </a>
-</div>
-<p class="text-sm text-slate-500">
-    Fully offline · Java Swing · Open source (MIT)
-</p></div><div id="preview" class="relative">
-<div class="absolute -inset-2 rounded-3xl bg-[var(--chalk-purple)]/10 blur-2xl"></div>
-<div class="relative rounded-3xl bg-gradient-to-br from-black/60 to-black/40 border border-white/10 p-4 shadow-2xl shadow-black/60">
-    <div class="relative w-full group overflow-hidden rounded-xl">
-        <img src="./assets/screenshot.png" alt="Uboard interface" class="transition-opacity duration-300 group-hover:opacity-0"/>
-        <iframe src="https://www.youtube.com/embed/FGh8b627jsg?autoplay=1&mute=1&controls=0&rel=0&modestbranding=1&playsinline=1" class="absolute inset-0 w-full h-full rounded-xl" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-    </div>
-</div></div><script>
-const thumbnail = document.getElementById("videoThumbnail");
-const iframe = document.getElementById("videoFrame");
-thumbnail.addEventListener("click", function () {
-    iframe.src = "https://www.youtube.com/embed/FGh8b627jsg?autoplay=1";
-    iframe.classList.remove("hidden");
-    thumbnail.classList.add("hidden");
-});</script></div></section><section id="features" class="max-w-7xl mx-auto px-6 mt-32 grid md:grid-cols-3 gap-6"><div class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition"><h3 class="font-semibold text-lg flex items-center gap-2">
-<span class="h-2 w-2 rounded-full bg-[var(--chalk-cyan)]"></span>
-Infinite canvas</h3><p class="text-slate-400 mt-2">
-Pan and zoom smoothly across an unbounded space using world-space
-      coordinates.</p></div><div class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition"><h3 class="font-semibold text-lg flex items-center gap-2">
-<span class="h-2 w-2 rounded-full bg-[var(--chalk-pink)]"></span>
-Built-in tools</h3><p class="text-slate-400 mt-2">
-Freehand drawing, shapes, text, eraser, and selection — everything you
-      need to think visually.</p></div><div class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition"><h3 class="font-semibold text-lg flex items-center gap-2">
-<span class="h-2 w-2 rounded-full bg-[var(--chalk-yellow)]"></span>
-Local-first by design</h3><p class="text-slate-400 mt-2">
-No telemetry, no sync, no servers. Your boards live entirely on your
-      machine.</p></div></section><section class="max-w-7xl mx-auto px-6 mt-28 grid md:grid-cols-3 gap-10"><div class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur"><h2 class="text-2xl font-bold">Why Uboard?</h2><p class="text-slate-400 mt-4 text-lg">
-Uboard is for people who think spatially. It stays out of your way,
-      launches instantly, and gives you a calm, private space to work
-      through ideas visually.</p><div class="grid grid-cols-2 gap-4 mt-8">
-<div class="rounded-xl bg-white/5 border border-white/10 p-4">
-    <strong>Open source</strong>
-    <p class="text-slate-400 text-sm">
-        MIT licensed. Inspect, modify, extend.
+        or cloud dependencies.</span>
     </p>
-</div>
-<div class="rounded-xl bg-white/5 border border-white/10 p-4">
-    <strong>Offline-first</strong>
-    <p class="text-slate-400 text-sm">Works without internet access.</p>
-</div></div></div><div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur"><h3 class="font-semibold text-lg">Get started</h3><ol class="mt-4 space-y-2 text-slate-400 text-sm list-decimal list-inside">
-<li>Download the Linux build</li>
-<li>Launch Uboard</li>
-<li>Start sketching ideas</li></ol></div></section><footer class="max-w-7xl mx-auto px-6 py-20 text-center text-slate-500 text-sm">Built with care by Shreya ·<a href="https://buymeacoffee.com/shreyaporwal" target="_blank" rel="noopener noreferrer" class="text-[var(--chalk-yellow)] hover:underline">Buy Me Buttermilk (Chhas)</a></footer></body></html>
+    <div class="flex gap-2 text-xs text-slate-500"></div>
+    <div id="download" class="scroll-mt-28"></div>
+    <div class="flex flex-wrap gap-4 mt-4">
+      <a href="https://github.com/porwalshreyaa/Uboard/raw/refs/heads/main/releases/uboard_1.0_amd64.deb" download
+        class="px-7 py-3 rounded-xl font-semibold bg-white/90 text-black hover:bg-white transition shadow-xl shadow-black/40">
+        Download for Linux (.deb)
+      </a>
+      <a href="https://github.com/porwalshreyaa/Uboard" target="_blank" rel="noopener noreferrer"
+        class="px-7 py-3 rounded-xl border border-white-400/30 text-white-300 hover:bg-white-400/10 transition">
+        View on GitHub
+      </a>
+    </div>
+    <p class="text-sm text-slate-500">
+      Fully offline · Java Swing · Open source (MIT)
+    </p>
+  </div>
+  <div id="preview" class="relative">
+    <div class="absolute -inset-2 rounded-3xl bg-[var(--chalk-purple)]/10 blur-2xl"></div>
+    <div
+      class="relative rounded-3xl bg-gradient-to-br from-black/60 to-black/40 border border-white/10 p-4 shadow-2xl shadow-black/60">
+      <div id="videoContainer" class="relative w-full overflow-hidden rounded-xl" style="padding-top:56.25%;">
+        <img id="thumbnail" src="./assets/screenshot.png" alt="Uboard interface"
+          class="absolute inset-0 w-full h-full object-cover hidden" />
+        <div id="player" class="absolute inset-0 w-full h-full"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+    let player;
+    const container = document.getElementById("videoContainer");
+    const thumbnail = document.getElementById("thumbnail");
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player("player", {
+        videoId: "FGh8b627jsg",
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          controls: 0,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1
+        },
+        events: {
+          onReady: (event) => event.target.playVideo(),
+          onStateChange: onPlayerStateChange
+        }
+      });
+    }
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.ENDED) {
+        document.getElementById("player").style.display = "none";
+        thumbnail.classList.remove("hidden");
+      }
+    }
+    container.addEventListener("mouseenter", () => {
+      if (player) {
+        document.getElementById("player").style.display = "block";
+        thumbnail.classList.add("hidden");
+        player.seekTo(0);
+        player.playVideo();
+      }
+    });
+  </script>
+  </div>
+</section>
+<section id="features" class="max-w-7xl mx-auto px-6 mt-32 grid md:grid-cols-3 gap-6">
+  <div
+    class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition">
+    <h3 class="font-semibold text-lg flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-[var(--chalk-cyan)]"></span>
+      Infinite canvas
+    </h3>
+    <p class="text-slate-400 mt-2">
+      Pan and zoom smoothly across an unbounded space using world-space
+      coordinates.</p>
+  </div>
+  <div
+    class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition">
+    <h3 class="font-semibold text-lg flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-[var(--chalk-pink)]"></span>
+      Built-in tools
+    </h3>
+    <p class="text-slate-400 mt-2">
+      Freehand drawing, shapes, text, eraser, and selection — everything you
+      need to think visually.</p>
+  </div>
+  <div
+    class="rounded-2xl bg-gradient-to-br from-white/6 to-white/2 border border-white/10 p-6 hover:-translate-y-1 transition">
+    <h3 class="font-semibold text-lg flex items-center gap-2">
+      <span class="h-2 w-2 rounded-full bg-[var(--chalk-yellow)]"></span>
+      Local-first by design
+    </h3>
+    <p class="text-slate-400 mt-2">
+      No telemetry, no sync, no servers. Your boards live entirely on your
+      machine.</p>
+  </div>
+</section>
+<section class="max-w-7xl mx-auto px-6 mt-28 grid md:grid-cols-3 gap-10">
+  <div class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+    <h2 class="text-2xl font-bold">Why Uboard?</h2>
+    <p class="text-slate-400 mt-4 text-lg">
+      Uboard is for people who think spatially. It stays out of your way,
+      launches instantly, and gives you a calm, private space to work
+      through ideas visually.</p>
+    <div class="grid grid-cols-2 gap-4 mt-8">
+      <div class="rounded-xl bg-white/5 border border-white/10 p-4">
+        <strong>Open source</strong>
+        <p class="text-slate-400 text-sm">
+          MIT licensed. Inspect, modify, extend.
+        </p>
+      </div>
+      <div class="rounded-xl bg-white/5 border border-white/10 p-4">
+        <strong>Offline-first</strong>
+        <p class="text-slate-400 text-sm">Works without internet access.</p>
+      </div>
+    </div>
+  </div>
+  <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+    <h3 class="font-semibold text-lg">Get started</h3>
+    <ol class="mt-4 space-y-2 text-slate-400 text-sm list-decimal list-inside">
+      <li>Download the Linux build</li>
+      <li>Launch Uboard</li>
+      <li>Start sketching ideas</li>
+    </ol>
+  </div>
+</section>
+<footer class="max-w-7xl mx-auto px-6 py-20 text-center text-slate-500 text-sm">Built with care by Shreya ·<a
+    href="https://buymeacoffee.com/shreyaporwal" target="_blank" rel="noopener noreferrer"
+    class="text-[var(--chalk-yellow)] hover:underline">Buy Me Buttermilk (Chhas)</a></footer>
+</body>
+</html>
